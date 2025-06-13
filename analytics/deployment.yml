@@ -1,0 +1,49 @@
+# analytics-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics
+  namespace: ns-hiorder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics
+  template:
+    metadata:
+      labels:
+        app: analytics
+    spec:
+      enableServiceLinks: false
+      containers:
+      - name: analytics
+        image: acrdigitalgarage03.azurecr.io/hiorder/analytics:latest
+        ports:
+        - containerPort: 8084
+        env:
+        # Spring Boot 설정
+        - name: SPRING_PROFILES_ACTIVE
+          value: "k8s"
+        - name: JAVA_OPTS
+          value: "-Xms256m -Xmx512m"
+          
+          
+        # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
+        - name: REDIS_HOST
+          value: "redis-service.hi-redis.svc.cluster.local"
+        - name: REDIS_PORT
+          value: "6379"
+          
+        # Kubernetes 자동 환경변수 비활성화
+        - name: KUBERNETES_SERVICE_HOST
+          value: ""
+        - name: KUBERNETES_SERVICE_PORT
+          value: ""
+          
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "125m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
