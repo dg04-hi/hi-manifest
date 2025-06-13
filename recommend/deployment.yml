@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: recommend
-          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:latest
+          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:2506130147
           ports:
             - containerPort: 8085
           env:
@@ -26,7 +26,6 @@ spec:
               value: "k8s"
             - name: JAVA_OPTS
               value: "-Xms512m -Xmx1024m"
-
             # 데이터베이스 연결 설정
             - name: RECOMMEND_DB_URL
               value: "jdbc:postgresql://20.249.162.245:5432/hiorder_recommend"
@@ -37,7 +36,6 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: password
-
             # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
             - name: REDIS_HOST
               value: "redis-service.hi-redis.svc.cluster.local"
@@ -45,7 +43,6 @@ spec:
               value: "6379"
             - name: REDIS_DATABASE
               value: "1"
-
             # 다른 마이크로서비스 연결 설정
             - name: STORE_SERVICE_URL
               value: "http://store-service.ns-hiorder.svc.cluster.local:8082"
@@ -53,7 +50,6 @@ spec:
               value: "http://review-service.ns-hiorder.svc.cluster.local:8083"
             - name: MEMBER_SERVICE_URL
               value: "http://member-service.ns-hiorder.svc.cluster.local:8081"
-
             # 추천 서비스 특화 설정
             - name: MAX_RECOMMENDATIONS
               value: "20"
@@ -61,7 +57,6 @@ spec:
               value: "5000"
             - name: RECOMMENDATION_CACHE_TTL
               value: "1800"
-
             # 외부 API 설정
             - name: GOOGLE_MAPS_API_KEY
               valueFrom:
@@ -75,20 +70,17 @@ spec:
                 secretKeyRef:
                   name: api-secret
                   key: hiorder-api-key
-
             # JWT 설정
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: jwt-secret
                   key: secret
-
             # Kubernetes 자동 환경변수 비활성화
             - name: KUBERNETES_SERVICE_HOST
               value: ""
             - name: KUBERNETES_SERVICE_PORT
               value: ""
-
           # 헬스체크 설정
           livenessProbe:
             httpGet:
@@ -98,7 +90,6 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 3
-
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
@@ -107,7 +98,6 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
-
           # 리소스 제한
           resources:
             requests:
@@ -116,17 +106,14 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
-
           # 볼륨 마운트 (로그 파일용)
           volumeMounts:
             - name: log-volume
               mountPath: /app/logs
-
       # 볼륨 정의
       volumes:
         - name: log-volume
           emptyDir: {}
-
       # 무중단 배포 설정
       strategy:
         type: RollingUpdate
