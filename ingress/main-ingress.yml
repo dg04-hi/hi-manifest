@@ -44,8 +44,8 @@ metadata:
     
 spec:
   ingressClassName: nginx
-  tls:
-  - secretName: hiorder-api-tls-secret
+  # tls:
+  # - secretName: hiorder-api-tls-secret
   rules:
   # - host: hiorder-api.20.249.191.180.nio.io
   - http:
