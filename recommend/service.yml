@@ -16,23 +16,3 @@ spec:
       name: http
   selector:
     app: recommend
-
----
-# LoadBalancer 서비스 (외부 접근용 - 개발/테스트 환경)
-apiVersion: v1
-kind: Service
-metadata:
-  name: recommend-service-external
-  namespace: ns-hiorder
-  labels:
-    app: recommend
-    service: recommend-external
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 8085
-      targetPort: 8085
-      protocol: TCP
-      name: http
-  selector:
-    app: recommend
