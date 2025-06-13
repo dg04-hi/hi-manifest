@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: member
-          image: acrdigitalgarage03.azurecr.io/hiorder/member:2506130540
+          image: acrdigitalgarage03.azurecr.io/hiorder/member:2506130552
           ports:
             - containerPort: 8081
           env:
