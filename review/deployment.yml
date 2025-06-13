@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: review
-          image: acrdigitalgarage03.azurecr.io/hiorder/review:latest
+          image: acrdigitalgarage03.azurecr.io/hiorder/review:2506130118
           ports:
             - containerPort: 8083
           env:
@@ -26,13 +26,11 @@ spec:
               value: "k8s"
             - name: JAVA_OPTS
               value: "-Xms512m -Xmx1024m"
-                  
             # Redis 연결 설정
             - name: REDIS_HOST
               value: "redis-service.hi-redis.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
-              
             # 파일 저장소 설정
             - name: FILE_STORAGE_PATH
               value: "/var/hiorder/uploads"
@@ -40,19 +38,16 @@ spec:
               value: "10MB"
             - name: MAX_REQUEST_SIZE
               value: "50MB"
-              
             # JPA 설정
             - name: JPA_DDL_AUTO
               value: "validate"
             - name: JPA_SHOW_SQL
               value: "false"
-              
             # Kubernetes 자동 환경변수 비활성화
             - name: KUBERNETES_SERVICE_HOST
               value: ""
             - name: KUBERNETES_SERVICE_PORT
               value: ""
-
           resources:
             requests:
               memory: "512Mi"
@@ -60,4 +55,3 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
-     
