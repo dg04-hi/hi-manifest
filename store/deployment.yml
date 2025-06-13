@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: store
-          image: acrdigitalgarage03.azurecr.io/hiorder/store:latest
+          image: acrdigitalgarage03.azurecr.io/hiorder/store:2506130150
           ports:
             - containerPort: 8082
           env:
@@ -26,19 +26,16 @@ spec:
               value: "k8s"
             - name: JAVA_OPTS
               value: "-Xms512m -Xmx1024m"
-                  
             # Redis 연결 설정
             - name: REDIS_HOST
               value: "redis-service.hi-redis.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
-              
             # JPA 설정
             - name: JPA_DDL_AUTO
               value: "validate"
             - name: JPA_SHOW_SQL
               value: "false"
-              
             # 외부 API 연동 설정
             - name: NAVER_CLIENT_ID
               valueFrom:
@@ -67,13 +64,11 @@ spec:
                   key: hiorder-api-key
             - name: HIORDER_BASE_URL
               value: "https://api.hiorder.com"
-              
             # Kubernetes 자동 환경변수 비활성화
             - name: KUBERNETES_SERVICE_HOST
               value: ""
             - name: KUBERNETES_SERVICE_PORT
               value: ""
-              
           resources:
             requests:
               memory: "512Mi"
@@ -81,7 +76,6 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
-              
           livenessProbe:
             httpGet:
               path: /actuator/health
@@ -90,7 +84,6 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 3
-            
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
@@ -99,7 +92,6 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
-            
           # 외부 API 호출을 위한 네트워크 정책
           securityContext:
             allowPrivilegeEscalation: false
