@@ -46,7 +46,7 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - api.hiorder.com
+    - hiorder-api.20.249.191.180.nio.io
     secretName: hiorder-api-tls-secret
   rules:
   - host: api.hiorder.com
