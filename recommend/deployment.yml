@@ -1,16 +1,11 @@
-# recommend-deployment.yaml (헬스체크 임시 비활성화 버전)
+# analytics-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: recommend
   namespace: ns-hiorder
 spec:
-  replicas: 1                    # 우선 1개로 줄여서 테스트
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+  replicas: 1
   selector:
     matchLabels:
       app: recommend
@@ -22,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: recommend
-          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:2506130147
+          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:2506130059
           ports:
             - containerPort: 8085
           env:
@@ -30,80 +25,17 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
             - name: JAVA_OPTS
-              value: "-Xms256m -Xmx512m"  # 메모리 줄여서 시작 속도 향상
-
-            # 서버 포트 명시적 설정
-            - name: SERVER_PORT
-              value: "8085"
-            - name: RECOMMEND_SERVICE_PORT
-              value: "8085"
-
-            # 데이터베이스 연결 설정 (옵션으로 변경)
-            - name: RECOMMEND_DB_URL
-              value: "jdbc:postgresql://20.249.162.245:5432/hiorder_recommend"
-            - name: RECOMMEND_DB_USERNAME
-              value: "hiorder_user"
-            - name: RECOMMEND_DB_PASSWORD
-              value: "hiorder_pass"
-            - name: JPA_DDL_AUTO
-              value: "none"               # DDL 자동 생성 비활성화
-
-            # Redis 연결 설정 (옵션으로 변경)
+              value: "-Xms256m -Xmx512m"
+            # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
             - name: REDIS_HOST
               value: "redis-service.hi-redis.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
-            - name: REDIS_DATABASE
-              value: "1"
-
-            # 다른 마이크로서비스 연결 설정
-            - name: STORE_SERVICE_URL
-              value: "http://store-service.ns-hiorder.svc.cluster.local:8082"
-            - name: REVIEW_SERVICE_URL
-              value: "http://review-service.ns-hiorder.svc.cluster.local:8083"
-            - name: MEMBER_SERVICE_URL
-              value: "http://member-service.ns-hiorder.svc.cluster.local:8081"
-
-            # 추천 서비스 특화 설정
-            - name: MAX_RECOMMENDATIONS
-              value: "20"
-            - name: DEFAULT_SEARCH_RADIUS
-              value: "5000"
-            - name: RECOMMENDATION_CACHE_TTL
-              value: "1800"
-
-            # 외부 API 설정 (빈 값으로 설정)
-            - name: GOOGLE_MAPS_API_KEY
-              value: ""
-            - name: HIORDER_API_BASE_URL
-              value: "https://api.hiorder.com"
-            - name: HIORDER_API_KEY
-              value: ""
-
-            # JWT 설정
-            - name: JWT_SECRET
-              value: "hiorder-recommend-secret-key-2024-default"
-            - name: JWT_EXPIRATION
-              value: "86400000"
-
-            # 로깅 레벨 조정 (시작 속도 향상)
-            - name: LOG_LEVEL_ROOT
-              value: "WARN"
-            - name: LOG_LEVEL
-              value: "INFO"
-
             # Kubernetes 자동 환경변수 비활성화
             - name: KUBERNETES_SERVICE_HOST
               value: ""
             - name: KUBERNETES_SERVICE_PORT
               value: ""
-
-          # 🔧 헬스체크 완전 제거 (임시)
-          # livenessProbe: 제거
-          # readinessProbe: 제거
-          # startupProbe: 제거
-
-          # 리소스 제한 (더 관대하게)
           resources:
             requests:
               memory: "256Mi"
@@ -111,13 +43,3 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "250m"
-
-          # 볼륨 마운트 (로그 파일용)
-          volumeMounts:
-            - name: log-volume
-              mountPath: /app/logs
-
-      # 볼륨 정의
-      volumes:
-        - name: log-volume
-          emptyDir: {}
