@@ -28,7 +28,7 @@ spec:
               value: "-Xms512m -Xmx1024m"
             # Redis 연결 설정
             - name: REDIS_HOST
-              value: "redis-service.hi-redis.svc.cluster.local"
+              value: "redis-service.ns-hiorder.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
             # JPA 설정
