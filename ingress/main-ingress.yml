@@ -4,12 +4,14 @@ metadata:
   name: hiorder-main-ingress
   namespace: ns-hiorder
   annotations:
-    # 기본 Nginx 설정 (rewrite 제거 - 각 서비스가 자체 처리)
+    # 기본 Ingress 설정
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/use-regex: "true"
     
-    # 파일 업로드를 위한 설정 (리뷰 서비스용)
+    # SSL 인증서 자동 발급 (cert-manager)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # 파일 업로드 설정 (리뷰 서비스용)
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     nginx.ingress.kubernetes.io/client-max-body-size: "50m"
     
@@ -18,40 +20,32 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     
-    # 기본 Rate Limiting
+    # Rate Limiting (v1.12.1 호환)
     nginx.ingress.kubernetes.io/rate-limit-requests-per-second: "100"
     nginx.ingress.kubernetes.io/rate-limit-connections: "200"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
     
     # CORS 설정
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
     
-    # 보안 헤더
+    # 보안 헤더 (v1.12.1 호환)
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "X-Frame-Options: SAMEORIGIN";
       more_set_headers "X-Content-Type-Options: nosniff";
       more_set_headers "X-XSS-Protection: 1; mode=block";
       more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
-      more_set_headers "X-Robots-Tag: noindex, nofollow";
       
-    # 특별 경로별 Rate Limiting
-    nginx.ingress.kubernetes.io/server-snippet: |
-      # 헬스체크는 제한 없음
-      location ~* ^/(health|actuator)/ {
-        access_log off;
-        limit_req off;
-      }
-      # 인증 API는 엄격하게 제한
-      location ~* ^/api/auth/ {
-        limit_req zone=auth burst=5 nodelay;
-      }
-      # 파일 업로드는 관대하게
-      location ~* ^/api/files/ {
-        limit_req zone=upload burst=20 nodelay;
-      }
-
+    # 백엔드 프로토콜 설정
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    
+    # 프록시 설정
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
+    
 spec:
   ingressClassName: nginx
   tls:
@@ -66,7 +60,7 @@ spec:
       # ==============================================
       # 📱 MEMBER SERVICE (회원 관리) - Port 8081
       # ==============================================
-      # 인증 관련 API (가장 높은 우선순위)
+      # 인증 관련 API (최우선 순위)
       - path: /api/auth
         pathType: Prefix
         backend:
@@ -135,7 +129,7 @@ spec:
             port:
               number: 8083
               
-      # 파일 업로드 API
+      # 파일 업로드 API (이미지 업로드)
       - path: /api/files
         pathType: Prefix
         backend:
@@ -178,9 +172,9 @@ spec:
               number: 8085
               
       # ==============================================
-      # 📚 DEVELOPER TOOLS (개발자 도구)
+      # 📚 SWAGGER UI & API DOCS (개발자 도구)
       # ==============================================
-      # API 문서 통합 페이지
+      # 통합 API 문서 (member-service 기본)
       - path: /docs
         pathType: Prefix
         backend:
@@ -188,10 +182,10 @@ spec:
             name: member-service
             port:
               number: 8081
-          
-      # 각 서비스별 Swagger UI
+              
+      # 각 서비스별 Swagger UI 직접 접근
       - path: /docs/member
-        pathType: Prefix  
+        pathType: Prefix
         backend:
           service:
             name: member-service
@@ -231,8 +225,9 @@ spec:
               number: 8085
               
       # ==============================================
-      # 💊 HEALTH CHECKS (헬스체크)
+      # 💊 HEALTH CHECKS & MONITORING
       # ==============================================
+      # 통합 헬스체크
       - path: /health
         pathType: Prefix
         backend:
@@ -241,7 +236,7 @@ spec:
             port:
               number: 8081
               
-      # 개별 서비스 헬스체크
+      # Spring Boot Actuator
       - path: /actuator
         pathType: Prefix
         backend:
@@ -250,10 +245,51 @@ spec:
             port:
               number: 8081
               
+      # 개별 서비스 헬스체크 (필요시)
+      - path: /health/member
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      - path: /health/store
+        pathType: Prefix
+        backend:
+          service:
+            name: store-service
+            port:
+              number: 8082
+              
+      - path: /health/review
+        pathType: Prefix
+        backend:
+          service:
+            name: review-service
+            port:
+              number: 8083
+              
+      - path: /health/analytics
+        pathType: Prefix
+        backend:
+          service:
+            name: analytics-service
+            port:
+              number: 8084
+              
+      - path: /health/recommend
+        pathType: Prefix
+        backend:
+          service:
+            name: recommend-service
+            port:
+              number: 8085
+              
       # ==============================================
-      # 🏠 DEFAULT ROUTES
+      # 🏠 DEFAULT ROOT PATH
       # ==============================================
-      # API 상태 확인용 기본 경로
+      # 기본 경로 (API 상태 확인)
       - path: /
         pathType: Prefix
         backend:
