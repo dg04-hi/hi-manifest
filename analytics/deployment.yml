@@ -22,8 +22,8 @@ spec:
             - containerPort: 8084
           env:
             # Spring Boot 설정
-            # - name: SPRING_PROFILES_ACTIVE
-            #   value: "k8s"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "common"
             - name: JAVA_OPTS
               value: "-Xms256m -Xmx512m"
             # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
