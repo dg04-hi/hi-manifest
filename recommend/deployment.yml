@@ -1,16 +1,11 @@
-# recommend-deployment.yaml (헬스체크 수정 버전)
+# recommend-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: recommend
   namespace: ns-hiorder
 spec:
-  replicas: 2
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
+  replicas: 1
   selector:
     matchLabels:
       app: recommend
@@ -22,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: recommend
-          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:2506130147
+          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:2506130207
           ports:
             - containerPort: 8085
           env:
@@ -30,106 +25,21 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
             - name: JAVA_OPTS
-              value: "-Xms512m -Xmx1024m"
-
-            # 서버 포트 명시적 설정 (중요!)
-            - name: SERVER_PORT
-              value: "8085"
-
-            # 데이터베이스 연결 설정
-            - name: RECOMMEND_DB_URL
-              value: "jdbc:postgresql://20.249.162.245:5432/hiorder_recommend"
-            - name: RECOMMEND_DB_USERNAME
-              value: "hiorder_user"
-            - name: RECOMMEND_DB_PASSWORD
-              value: "hiorder_pass"
-
+              value: "-Xms256m -Xmx512m"
             # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
             - name: REDIS_HOST
               value: "redis-service.hi-redis.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
-            - name: REDIS_DATABASE
-              value: "1"
-
-            # 다른 마이크로서비스 연결 설정
-            - name: STORE_SERVICE_URL
-              value: "http://store-service.ns-hiorder.svc.cluster.local:8082"
-            - name: REVIEW_SERVICE_URL
-              value: "http://review-service.ns-hiorder.svc.cluster.local:8083"
-            - name: MEMBER_SERVICE_URL
-              value: "http://member-service.ns-hiorder.svc.cluster.local:8081"
-
-            # 추천 서비스 특화 설정
-            - name: MAX_RECOMMENDATIONS
-              value: "20"
-            - name: DEFAULT_SEARCH_RADIUS
-              value: "5000"
-            - name: RECOMMENDATION_CACHE_TTL
-              value: "1800"
-
-            # 외부 API 설정 (빈 값으로 설정)
-            - name: GOOGLE_MAPS_API_KEY
-              value: ""
-            - name: HIORDER_API_BASE_URL
-              value: "https://api.hiorder.com"
-            - name: HIORDER_API_KEY
-              value: ""
-
-            # JWT 설정 (기본값으로 설정)
-            - name: JWT_SECRET
-              value: "hiorder-recommend-secret-key-2024-default"
-
             # Kubernetes 자동 환경변수 비활성화
             - name: KUBERNETES_SERVICE_HOST
               value: ""
             - name: KUBERNETES_SERVICE_PORT
               value: ""
-
-          # 🔧 수정된 헬스체크 설정
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8085
-            initialDelaySeconds: 120      # 2분으로 증가 (애플리케이션 시작 시간 고려)
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 5           # 5회로 증가 (더 관대하게)
-
-          readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8085
-            initialDelaySeconds: 90       # 1.5분으로 증가
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 5           # 5회로 증가
-
-          # 🆕 시작 프로브 추가 (Spring Boot 시작 완료까지 기다림)
-          startupProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8085
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 30          # 최대 5분 대기 (30 * 10초)
-
-          # 리소스 제한
           resources:
             requests:
+              memory: "256Mi"
+              cpu: "125m"
+            limits:
               memory: "512Mi"
               cpu: "250m"
-            limits:
-              memory: "1024Mi"
-              cpu: "500m"
-
-          # 볼륨 마운트 (로그 파일용)
-          volumeMounts:
-            - name: log-volume
-              mountPath: /app/logs
-
-      # 볼륨 정의
-      volumes:
-        - name: log-volume
-          emptyDir: {}
