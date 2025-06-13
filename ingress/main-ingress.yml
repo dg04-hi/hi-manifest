@@ -64,7 +64,7 @@ spec:
               number: 8081
               
       # 회원 관리 API
-      - path: /api/members
+      - path: /api/members/ 
         pathType: Prefix
         backend:
           service:

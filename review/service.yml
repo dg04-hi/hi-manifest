@@ -6,25 +6,6 @@ metadata:
   labels:
     app: review
 spec:
-  type: ClusterIP
-  ports:
-  - port: 8083
-    targetPort: 8083
-    protocol: TCP
-    name: http
-  selector:
-    app: review
-
----
-# LoadBalancer Service for external access (if needed)
-apiVersion: v1
-kind: Service
-metadata:
-  name: review-service-lb
-  namespace: ns-hiorder
-  labels:
-    app: review
-spec:
   type: LoadBalancer
   ports:
   - port: 8083
