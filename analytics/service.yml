@@ -4,7 +4,7 @@ metadata:
   name: analytics-service
   namespace: ns-hiorder
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - port: 8084
     targetPort: 8084

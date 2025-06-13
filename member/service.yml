@@ -4,7 +4,7 @@ metadata:
   name: member-service
   namespace: ns-hiorder
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - port: 8081
     targetPort: 8081
