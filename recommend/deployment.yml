@@ -6,6 +6,12 @@ metadata:
   namespace: ns-hiorder
 spec:
   replicas: 2
+  # ✅ strategy는 여기에 위치해야 함!
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: recommend
@@ -31,11 +37,6 @@ spec:
               value: "jdbc:postgresql://20.249.162.245:5432/hiorder_recommend"
             - name: RECOMMEND_DB_USERNAME
               value: "hiorder_user"
-            - name: RECOMMEND_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: password
             # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
             - name: REDIS_HOST
               value: "redis-service.hi-redis.svc.cluster.local"
@@ -114,9 +115,3 @@ spec:
       volumes:
         - name: log-volume
           emptyDir: {}
-      # 무중단 배포 설정
-      strategy:
-        type: RollingUpdate
-        rollingUpdate:
-          maxUnavailable: 1
-          maxSurge: 1
