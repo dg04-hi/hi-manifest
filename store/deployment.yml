@@ -36,39 +36,6 @@ spec:
               value: "validate"
             - name: JPA_SHOW_SQL
               value: "false"
-            # 외부 API 연동 설정
-            - name: NAVER_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: store-api-secret
-                  key: naver-client-id
-            - name: NAVER_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: store-api-secret
-                  key: naver-client-secret
-            - name: KAKAO_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: store-api-secret
-                  key: kakao-api-key
-            - name: GOOGLE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: store-api-secret
-                  key: google-api-key
-            - name: HIORDER_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: store-api-secret
-                  key: hiorder-api-key
-            - name: HIORDER_BASE_URL
-              value: "https://api.hiorder.com"
-            # Kubernetes 자동 환경변수 비활성화
-            - name: KUBERNETES_SERVICE_HOST
-              value: ""
-            - name: KUBERNETES_SERVICE_PORT
-              value: ""
           resources:
             requests:
               memory: "512Mi"
@@ -76,23 +43,6 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8082
-            initialDelaySeconds: 60
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8082
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-          # 외부 API 호출을 위한 네트워크 정책
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
