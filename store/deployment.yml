@@ -22,8 +22,8 @@ spec:
             - containerPort: 8082
           env:
             # Spring Boot 설정
-            - name: SPRING_PROFILES_ACTIVE
-              value: "k8s"
+            # - name: SPRING_PROFILES_ACTIVE
+            #   value: "k8s"
             - name: JAVA_OPTS
               value: "-Xms512m -Xmx1024m"
             # Redis 연결 설정
@@ -33,7 +33,7 @@ spec:
               value: "6379"
             # JPA 설정
             - name: JPA_DDL_AUTO
-              value: "validate"
+              value: "update"
             - name: JPA_SHOW_SQL
               value: "false"
           resources:

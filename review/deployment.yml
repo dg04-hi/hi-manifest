@@ -22,8 +22,8 @@ spec:
             - containerPort: 8083
           env:
             # Spring Boot 설정
-            - name: SPRING_PROFILES_ACTIVE
-              value: "k8s"
+            # - name: SPRING_PROFILES_ACTIVE
+            #   value: "k8s"
             - name: JAVA_OPTS
               value: "-Xms512m -Xmx1024m"
             # Redis 연결 설정
@@ -40,7 +40,7 @@ spec:
               value: "50MB"
             # JPA 설정
             - name: JPA_DDL_AUTO
-              value: "validate"
+              value: "update"
             - name: JPA_SHOW_SQL
               value: "false"
             # Kubernetes 자동 환경변수 비활성화
