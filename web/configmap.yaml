@@ -7,8 +7,8 @@ data:
   # External IP 기반으로 변경
   AUTH_SERVICE_URL: "http://20.249.131.89/auth"
   MEMBER_SERVICE_URL: "http://20.249.131.89/member"
-  STORE_SERVICE_URL: "http://20.1.2.3/store"
-  REVIEW_SERVICE_URL: "http://20.1.2.3/review"
-  ANALYTICS_SERVICE_URL: "http://20.1.2.3/analytics"
-  RECOMMEND_SERVICE_URL: "http://20.1.2.3/recommend"
+  STORE_SERVICE_URL: "http://20.249.163.158/store"
+  REVIEW_SERVICE_URL: "http://20.249.113.225/review"
+  ANALYTICS_SERVICE_URL: "http://20.249.113.195/analytics"
+  RECOMMEND_SERVICE_URL: "http://4.217.130.203/recommend"
   ENVIRONMENT: "production"
