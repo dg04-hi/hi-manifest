@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: recommend
-          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:2506130839
+          image: acrdigitalgarage03.azurecr.io/hiorder/recommend:2506131258
           ports:
             - containerPort: 8085
           env:
