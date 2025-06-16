@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: store
-          image: acrdigitalgarage03.azurecr.io/hiorder/store:2506160640
+          image: acrdigitalgarage03.azurecr.io/hiorder/store:2506160801
           ports:
             - containerPort: 8082
           env:
