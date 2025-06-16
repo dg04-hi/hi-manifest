@@ -1,0 +1,18 @@
+# recommend-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommend-service
+  namespace: ns-hiorder
+  labels:
+    app: recommend
+    service: recommend
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8085
+      targetPort: 8085
+      protocol: TCP
+      name: http
+  selector:
+    app: recommend

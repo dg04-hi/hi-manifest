@@ -1,0 +1,45 @@
+# member-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member
+  namespace: ns-hiorder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: member
+  template:
+    metadata:
+      labels:
+        app: member
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: member
+          image: acrdigitalgarage03.azurecr.io/hiorder/member:2506131312
+          ports:
+            - containerPort: 8081
+          env:
+            # Spring Boot 설정
+            - name: SPRING_PROFILES_ACTIVE
+              value: "common"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m"
+            # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
+            - name: REDIS_HOST
+              value: "redis-service.ns-hiorder.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
+            # Kubernetes 자동 환경변수 비활성화
+            - name: KUBERNETES_SERVICE_HOST
+              value: ""
+            - name: KUBERNETES_SERVICE_PORT
+              value: ""
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "125m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"

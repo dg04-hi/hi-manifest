@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-service
+  namespace: ns-hiorder
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8084
+    targetPort: 8084
+    protocol: TCP
+    name: http
+  selector:
+    app: analytics

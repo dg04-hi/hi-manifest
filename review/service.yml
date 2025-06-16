@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service
+  namespace: ns-hiorder
+  labels:
+    app: review
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8083
+    targetPort: 8083
+    protocol: TCP
+    name: http
+  selector:
+    app: review

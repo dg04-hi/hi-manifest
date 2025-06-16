@@ -1,0 +1,61 @@
+# analytics-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics
+  namespace: ns-hiorder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics
+  template:
+    metadata:
+      labels:
+        app: analytics
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: analytics
+          image: acrdigitalgarage03.azurecr.io/hiorder/analytics:2506160200
+          ports:
+            - containerPort: 8084
+          env:
+            # Spring Boot 설정
+            - name: SPRING_PROFILES_ACTIVE
+              value: "common"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m"
+            # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
+            - name: REDIS_HOST
+              value: "redis-service.ns-hiorder.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
+            # Kubernetes 자동 환경변수 비활성화
+            - name: KUBERNETES_SERVICE_HOST
+              value: ""
+            - name: KUBERNETES_SERVICE_PORT
+              value: ""
+            - name: EXTERNAL_SERVICES_REVIEW
+              value: "http://review-service:8083"
+            - name: EXTERNAL_SERVICES_STORE
+              value: "http://store-service:8082"
+            - name: EXTERNAL_SERVICES_MEMBER
+              value: "http://member-service:8081"
+            - name: CLAUDE_API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: hiorder-api-config
+                  key: CLAUDE_API_KEY
+            - name: OPENAI_API_KEY
+              valueFrom:
+                configMapKeyRef: 
+                  name: hiorder-api-config
+                  key: OPENAI_API_KEY
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "125m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"

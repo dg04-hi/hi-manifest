@@ -1,0 +1,52 @@
+# store-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store
+  namespace: ns-hiorder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store
+  template:
+    metadata:
+      labels:
+        app: store
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: store
+          image: acrdigitalgarage03.azurecr.io/hiorder/store:2506160225
+          ports:
+            - containerPort: 8082
+          env:
+            # Spring Boot 설정
+            - name: SPRING_PROFILES_ACTIVE
+              value: "common"
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m"
+            # Redis 연결 설정
+            - name: REDIS_HOST
+              value: "redis-service.ns-hiorder.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
+            # JPA 설정
+            - name: JPA_DDL_AUTO
+              value: "update"
+            - name: JPA_SHOW_SQL
+              value: "false"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL

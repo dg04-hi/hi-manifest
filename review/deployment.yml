@@ -1,0 +1,57 @@
+# review-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review
+  namespace: ns-hiorder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review
+  template:
+    metadata:
+      labels:
+        app: review
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: review
+          image: acrdigitalgarage03.azurecr.io/hiorder/review:2506160213
+          ports:
+            - containerPort: 8083
+          env:
+            # Spring Boot 설정
+            - name: SPRING_PROFILES_ACTIVE
+              value: "common"
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m"
+            # Redis 연결 설정
+            - name: REDIS_HOST
+              value: "redis-service.ns-hiorder.svc.cluster.local"
+            - name: REDIS_PORT
+              value: "6379"
+            # 파일 저장소 설정
+            - name: FILE_STORAGE_PATH
+              value: "/var/hiorder/uploads"
+            - name: MAX_FILE_SIZE
+              value: "10MB"
+            - name: MAX_REQUEST_SIZE
+              value: "50MB"
+            # JPA 설정
+            - name: JPA_DDL_AUTO
+              value: "update"
+            - name: JPA_SHOW_SQL
+              value: "false"
+            # Kubernetes 자동 환경변수 비활성화
+            - name: KUBERNETES_SERVICE_HOST
+              value: ""
+            - name: KUBERNETES_SERVICE_PORT
+              value: ""
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"

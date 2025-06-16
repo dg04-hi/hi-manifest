@@ -1,0 +1,293 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hiorder-main-ingress
+  namespace: ns-hiorder
+  annotations:
+    # 기본 Ingress 설정
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # SSL 인증서 자동 발급 (cert-manager)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # 파일 업로드 설정 (리뷰 서비스용)
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/client-max-body-size: "50m"
+    
+    # 타임아웃 설정 (외부 API 호출 고려)
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    
+    # Rate Limiting (v1.12.1 호환)
+    nginx.ingress.kubernetes.io/rate-limit-requests-per-second: "100"
+    nginx.ingress.kubernetes.io/rate-limit-connections: "200"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    
+    # CORS 설정 (snippet 없이)
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
+    
+    # 백엔드 프로토콜 설정
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    
+    # 프록시 설정
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
+    
+    # 업스트림 해시 설정 (세션 어피니티)
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+    
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - secretName: hiorder-api-tls-secret
+  rules:
+  # - host: hiorder-api.20.249.191.180.nio.io
+  - http:
+      paths:
+      
+      # ==============================================
+      # 📱 MEMBER SERVICE (회원 관리) - Port 8081
+      # ==============================================
+      # 인증 관련 API (최우선 순위)
+      - path: /api/auth
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      # 회원 관리 API
+      - path: /api/members/ 
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      # 구독 관리 API
+      - path: /api/subscriptions
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      # ==============================================
+      # 🏪 STORE SERVICE (매장 운영) - Port 8082
+      # ==============================================
+      # 매장 관리 API
+      - path: /api/stores
+        pathType: Prefix
+        backend:
+          service:
+            name: store-service
+            port:
+              number: 8082
+              
+      # 메뉴 관리 API
+      - path: /api/menus
+        pathType: Prefix
+        backend:
+          service:
+            name: store-service
+            port:
+              number: 8082
+              
+      # 외부 플랫폼 연동 API
+      - path: /api/external
+        pathType: Prefix
+        backend:
+          service:
+            name: store-service
+            port:
+              number: 8082
+              
+      # ==============================================
+      # 📝 REVIEW SERVICE (리뷰 관리) - Port 8083
+      # ==============================================
+      # 리뷰 관리 API
+      - path: /api/reviews
+        pathType: Prefix
+        backend:
+          service:
+            name: review-service
+            port:
+              number: 8083
+              
+      # 파일 업로드 API (이미지 업로드)
+      - path: /api/files
+        pathType: Prefix
+        backend:
+          service:
+            name: review-service
+            port:
+              number: 8083
+              
+      # ==============================================
+      # 🤖 ANALYTICS SERVICE (AI 분석) - Port 8084
+      # ==============================================
+      # AI 분석 API
+      - path: /api/analytics
+        pathType: Prefix
+        backend:
+          service:
+            name: analytics-service
+            port:
+              number: 8084
+              
+      # 실행 계획 API
+      - path: /api/action-plans
+        pathType: Prefix
+        backend:
+          service:
+            name: analytics-service
+            port:
+              number: 8084
+              
+      # ==============================================
+      # 🎯 RECOMMEND SERVICE (취향 추천) - Port 8085
+      # ==============================================
+      # 추천 API
+      - path: /api/recommend
+        pathType: Prefix
+        backend:
+          service:
+            name: recommend-service
+            port:
+              number: 8085
+              
+      # ==============================================
+      # 📚 SWAGGER UI & API DOCS (개발자 도구)
+      # ==============================================
+      # 통합 API 문서 (member-service 기본)
+      - path: /docs
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      # 각 서비스별 Swagger UI 직접 접근
+      - path: /docs/member
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      - path: /docs/store
+        pathType: Prefix
+        backend:
+          service:
+            name: store-service
+            port:
+              number: 8082
+              
+      - path: /docs/review
+        pathType: Prefix
+        backend:
+          service:
+            name: review-service
+            port:
+              number: 8083
+              
+      - path: /docs/analytics
+        pathType: Prefix
+        backend:
+          service:
+            name: analytics-service
+            port:
+              number: 8084
+              
+      - path: /docs/recommend
+        pathType: Prefix
+        backend:
+          service:
+            name: recommend-service
+            port:
+              number: 8085
+              
+      # ==============================================
+      # 💊 HEALTH CHECKS & MONITORING
+      # ==============================================
+      # 통합 헬스체크
+      - path: /health
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      # Spring Boot Actuator
+      - path: /actuator
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      # 개별 서비스 헬스체크 (필요시)
+      - path: /health/member
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
+              
+      - path: /health/store
+        pathType: Prefix
+        backend:
+          service:
+            name: store-service
+            port:
+              number: 8082
+              
+      - path: /health/review
+        pathType: Prefix
+        backend:
+          service:
+            name: review-service
+            port:
+              number: 8083
+              
+      - path: /health/analytics
+        pathType: Prefix
+        backend:
+          service:
+            name: analytics-service
+            port:
+              number: 8084
+              
+      - path: /health/recommend
+        pathType: Prefix
+        backend:
+          service:
+            name: recommend-service
+            port:
+              number: 8085
+              
+      # ==============================================
+      # 🏠 DEFAULT ROOT PATH
+      # ==============================================
+      # 기본 경로 (API 상태 확인)
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 8081
