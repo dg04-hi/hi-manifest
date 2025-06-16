@@ -48,6 +48,11 @@ spec:
               value: ""
             - name: KUBERNETES_SERVICE_PORT
               value: ""
+            - name: EVENTHUB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: eventhub-secret
+                  key: connectionString
           resources:
             requests:
               memory: "512Mi"

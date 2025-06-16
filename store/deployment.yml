@@ -36,6 +36,11 @@ spec:
               value: "update"
             - name: JPA_SHOW_SQL
               value: "false"
+            - name: EVENTHUB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: eventhub-secret
+                  key: connectionString
           resources:
             requests:
               memory: "512Mi"
