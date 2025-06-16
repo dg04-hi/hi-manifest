@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: analytics
-          image: acrdigitalgarage03.azurecr.io/hiorder/analytics:2506160200
+          image: acrdigitalgarage03.azurecr.io/hiorder/analytics:2506160515
           ports:
             - containerPort: 8084
           env:
@@ -49,7 +49,7 @@ spec:
                   key: CLAUDE_API_KEY
             - name: OPENAI_API_KEY
               valueFrom:
-                configMapKeyRef: 
+                configMapKeyRef:
                   name: hiorder-api-config
                   key: OPENAI_API_KEY
           resources:
