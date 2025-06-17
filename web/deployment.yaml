@@ -18,7 +18,7 @@ spec:
       enableServiceLinks: false  # 👈 추가
       containers:
       - name: frontend
-        image: acrdigitalgarage03.azurecr.io/hiorder/frontend:2506170633
+        image: acrdigitalgarage03.azurecr.io/hiorder/frontend:2506170636
         ports:
         - containerPort: 80
         envFrom:
