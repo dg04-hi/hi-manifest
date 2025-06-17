@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: analytics
-          image: acrdigitalgarage03.azurecr.io/hiorder/analytics:2506170825
+          image: acrdigitalgarage03.azurecr.io/hiorder/analytics:2506170856
           ports:
             - containerPort: 8084
           env:
