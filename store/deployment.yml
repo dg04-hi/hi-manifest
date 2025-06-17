@@ -36,7 +36,7 @@ spec:
               value: "update"
             - name: JPA_SHOW_SQL
               value: "false"
-            - name: EVENTHUB_CONNECTION_STRING
+            - name: AZURE_EVENTHUB_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
                   name: eventhub-secret
