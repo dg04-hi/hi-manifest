@@ -48,7 +48,7 @@ spec:
               value: ""
             - name: KUBERNETES_SERVICE_PORT
               value: ""
-            - name: EVENTHUB_CONNECTION_STRING
+            - name: AZURE_EVENTHUB_CONNECTION_STRING
               valueFrom:
                 secretKeyRef:
                   name: eventhub-secret
