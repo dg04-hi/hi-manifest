@@ -28,7 +28,8 @@ spec:
               value: "-Xms256m -Xmx512m"
             # Redis 연결 설정 (다른 네임스페이스의 Redis 서비스)
             - name: REDIS_HOST
-              value: "redis-service.ns-hiorder.svc.cluster.local"
+              # value: "redis-service.ns-hiorder.svc.cluster.local"
+              value: "redis-service"
             - name: REDIS_PORT
               value: "6379"
             # Kubernetes 자동 환경변수 비활성화
