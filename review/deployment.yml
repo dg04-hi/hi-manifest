@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: review
-          image: acrdigitalgarage03.azurecr.io/hiorder/review:2506171257
+          image: acrdigitalgarage03.azurecr.io/hiorder/review:2506180054
           ports:
             - containerPort: 8083
           env:
