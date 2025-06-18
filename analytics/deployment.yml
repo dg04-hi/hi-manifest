@@ -54,8 +54,8 @@ spec:
                   key: OPENAI_API_KEY
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "125m"
+              memory: "1Gi"
+              cpu: "500m"
             limits:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "2Gi"
+              cpu: "1"
