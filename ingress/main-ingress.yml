@@ -5,8 +5,8 @@ metadata:
   namespace: ns-hiorder
   annotations:
     # 기본 Ingress 설정
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     
     # SSL 인증서 자동 발급 (cert-manager)
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
