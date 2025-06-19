@@ -279,15 +279,4 @@ spec:
             name: recommend-service
             port:
               number: 8085
-              
-      # ==============================================
-      # 🏠 DEFAULT ROOT PATH
-      # ==============================================
-      # 기본 경로 (API 상태 확인)
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: member-service
-            port:
-              number: 8081
+            
