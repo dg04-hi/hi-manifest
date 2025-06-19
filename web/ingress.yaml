@@ -3,12 +3,14 @@ kind: Ingress
 metadata:
   name: hi-web-ingress
   namespace: ns-hiorder
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /
+      - path: /hi
         pathType: Prefix
         backend:
           service:
