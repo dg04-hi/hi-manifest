@@ -8,15 +8,11 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    # SPA를 위한 설정 - 모든 route를 index.html로 리다이렉트
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      try_files $uri $uri/ /index.html;
 spec:
   ingressClassName: nginx
   rules:
-  - http:  # host 제거 - Ingress Controller의 기본 IP 사용
+  - http:
       paths:
-      # Frontend - root path에서 서비스 (backend API와 중복되지 않음)
       - path: /
         pathType: Prefix
         backend:
