@@ -14,8 +14,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: "20.249.191.180"  # 기존 backend와 동일한 IP 사용
-    http:
+  - http:  # host 제거 - Ingress Controller의 기본 IP 사용
       paths:
       # Frontend - root path에서 서비스 (backend API와 중복되지 않음)
       - path: /
