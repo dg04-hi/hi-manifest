@@ -3,12 +3,8 @@ kind: Ingress
 metadata:
   name: hi-web-ingress
   namespace: ns-hiorder
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      try_files $uri $uri/ /index.html;
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
